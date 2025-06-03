@@ -7,11 +7,12 @@ import java.time.LocalDate;
 import java.util.List;
 
 @Entity
-@Table(name = "equipaje_dia")
+@Table(name = "clima_dia")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class EquipajeDia {
+@Builder
+public class ClimaDia {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -19,13 +20,14 @@ public class EquipajeDia {
 
     private LocalDate fecha;
 
-    @ManyToOne
+    private double temperaturaMin;
+
+    private double temperaturaMax;
+
+    private String descripcion;
+
+    @OneToOne
     @JoinColumn(name = "equipaje_dia_id")
-    private Equipaje equipaje;
-
-    @OneToMany(mappedBy = "equipajeDia", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<ItemEquipaje> items;
-
-    @OneToOne(mappedBy = "equipajeDia", cascade = CascadeType.ALL, orphanRemoval = true)
-    private ClimaDia clima;
+    private EquipajeDia equipajeDia;
 }
+
