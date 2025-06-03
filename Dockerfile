@@ -1,13 +1,13 @@
 # Stage de compilación
-FROM maven:3.9.6-jdk-17 AS build # Es recomendable usar una versión de JDK más reciente y estable, como JDK 17
+FROM maven:3.9.6-jdk-17 AS build 
 WORKDIR /app
 COPY . .
 RUN mvn clean package -DskipTests
 
 # Stage de empaquetado
-FROM openjdk:17-jdk-slim # Usamos la misma versión de JDK que en la etapa de compilación
+FROM openjdk:17-jdk-slim 
 WORKDIR /app
-COPY --from=build /app/target/*.jar app.jar # Asegúrate de que esto coincida con el nombre de tu JAR, o usa *.jar para mayor flexibilidad
+COPY --from=build /app/target/*.jar app.jar 
 
 # EXPONER EL PUERTO. El puerto 8080 ya está en tu application.properties
 EXPOSE 8080
