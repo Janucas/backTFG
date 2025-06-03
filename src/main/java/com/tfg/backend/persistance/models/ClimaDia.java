@@ -6,6 +6,7 @@ import lombok.*;
 import java.time.LocalDate;
 
 @Entity
+@Table(name = "clima_dia")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
