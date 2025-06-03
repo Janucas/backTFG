@@ -12,10 +12,11 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
+// 👇👇 Añade esta línea justo antes del controlador
+@CrossOrigin(origins = "https://fronttfg.onrender.com")
 @RestController
 @RequestMapping("/auth")
 public class AuthController {
-
     private final AuthenticationManager authenticationManager;
     private final UsuarioRepository usuarioRepository;
     private final PasswordEncoder passwordEncoder;
@@ -42,7 +43,7 @@ public class AuthController {
         Usuario usuario = new Usuario();
         usuario.setUsername(request.getUsername());
         usuario.setPassword(passwordEncoder.encode(request.getPassword()));
-        usuario.setEmail(request.getUsername()); // Puedes separar username/email si quieres
+        usuario.setEmail(request.getUsername());
         usuario.setRole("USER");
 
         usuarioRepository.save(usuario);
