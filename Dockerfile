@@ -1,18 +1,13 @@
 # Stage de compilación
-FROM maven:3.9.6-jdk-11 AS build 
+FROM maven:3.9.6-eclipse-temurin-11 AS build 
 WORKDIR /app
 COPY . .
 RUN mvn clean package -DskipTests
 
 # Stage de empaquetado
-FROM openjdk:17-jdk-slim 
+FROM eclipse-temurin:11-jre-slim # Use a matching JRE image for runtime
 WORKDIR /app
-COPY --from=build /app/target/*.jar app.jar 
+COPY --from=build /app/target/*.jar app.jar
 
-# EXPONER EL PUERTO. El puerto 8080 ya está en tu application.properties
 EXPOSE 8080
-
-# DEFINIR EL COMANDO DE ARRANQUE.
-# Render inyectará las variables de entorno que configures en su dashboard.
-# No necesitas definir los valores sensibles aquí.
 ENTRYPOINT ["java", "-jar", "app.jar"]
