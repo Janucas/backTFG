@@ -1,5 +1,5 @@
 # Stage de compilación
-FROM maven:3.9.6-jdk-17 AS build 
+FROM maven:3.9.6-jdk-11 AS build 
 WORKDIR /app
 COPY . .
 RUN mvn clean package -DskipTests
