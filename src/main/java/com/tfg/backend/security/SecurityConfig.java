@@ -34,7 +34,7 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         return http
             .csrf(csrf -> csrf.disable())
-            .cors(cors -> {})
+            .cors(cors -> {}) // Activamos el filtro CORS definido más abajo
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/auth/**").permitAll()
                 .requestMatchers("/api/equipajes/**").authenticated()
@@ -51,7 +51,7 @@ public class SecurityConfig {
         CorsConfiguration config = new CorsConfiguration();
         config.setAllowCredentials(true);
         config.setAllowedOrigins(List.of(
-            "http://localhost:3000", 
+            "http://localhost:3000",
             "https://fronttfg.onrender.com"
         ));
         config.setAllowedHeaders(List.of("*"));
