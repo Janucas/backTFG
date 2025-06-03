@@ -31,4 +31,6 @@ public class UsuarioController {
         Optional<Usuario> usuario = usuarioService.findByUsername(username);
         return usuario.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
+
+    
 }

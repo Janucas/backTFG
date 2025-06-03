@@ -1,6 +1,7 @@
 package com.tfg.backend.controllers;
 
 import com.tfg.backend.dto.EquipajeCompletoResponse;
+import com.tfg.backend.dto.EquipajeHistorialDto;
 import com.tfg.backend.dto.EquipajeRequest;
 import com.tfg.backend.dto.InformeEquipajeResponse;
 import com.tfg.backend.persistance.models.Equipaje;
@@ -8,6 +9,8 @@ import com.tfg.backend.persistance.models.Usuario;
 import com.tfg.backend.persistance.repository.EquipajeRepository;
 import com.tfg.backend.persistance.repository.UsuarioRepository;
 import com.tfg.backend.services.EquipajeService;
+import com.tfg.backend.utils.PdfUtil;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -107,6 +110,61 @@ public ResponseEntity<List<InformeEquipajeResponse>> obtenerInforme(@PathVariabl
     List<InformeEquipajeResponse> informe = equipajeService.generarInformeEquipaje(equipajeOpt.get());
     return ResponseEntity.ok(informe);
 }
+
+@GetMapping("/historial")
+public ResponseEntity<List<EquipajeHistorialDto>> obtenerHistorialUsuario() {
+    Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+    String email = auth.getName();
+    List<EquipajeHistorialDto> historial = equipajeService.obtenerHistorialPorUsuario(email);
+    return ResponseEntity.ok(historial);
+}
+
+@DeleteMapping("/{id}")
+public ResponseEntity<?> eliminarEquipaje(@PathVariable Integer id)
+ {
+    Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+    String email = auth.getName();
+
+    boolean eliminado = equipajeService.eliminarEquipajePorUsuario(id, email);
+
+    if (eliminado) {
+        return ResponseEntity.ok().build();
+    } else {
+        return ResponseEntity.status(403).body("No tienes permiso para eliminar este equipaje.");
+    }
+}
+
+@GetMapping("/{id}/informe-pdf")
+public ResponseEntity<byte[]> descargarInformePdf(@PathVariable Integer id)
+ {
+    Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+    String email = auth.getName();
+
+    Optional<Equipaje> equipajeOpt = equipajeRepository.findById(id);
+    Optional<Usuario> usuarioOpt = usuarioRepository.findByEmail(email);
+
+    if (equipajeOpt.isEmpty() || usuarioOpt.isEmpty()) {
+        return ResponseEntity.notFound().build();
+    }
+
+    Equipaje equipaje = equipajeOpt.get();
+    Usuario usuario = usuarioOpt.get();
+
+    if (!equipaje.getUsuario().getId().equals(usuario.getId())) {
+        return ResponseEntity.status(403).build();
+    }
+
+    List<InformeEquipajeResponse> informe = equipajeService.generarInformeEquipaje(equipaje);
+    byte[] pdfBytes = PdfUtil.generarPdfDesdeInforme(informe); // <-- este método lo implementamos ahora
+
+    return ResponseEntity.ok()
+            .header("Content-Disposition", "attachment; filename=equipaje_" + id + ".pdf")
+            .header("Content-Type", "application/pdf")
+            .body(pdfBytes);
+}
+
+
+
 
 
 
