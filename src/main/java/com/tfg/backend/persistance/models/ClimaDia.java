@@ -25,7 +25,8 @@ public class ClimaDia {
 
     private String descripcion;
 
-    @ManyToOne
+    @OneToOne
     @JoinColumn(name = "equipaje_dia_id")
     private EquipajeDia equipajeDia;
 }
+
