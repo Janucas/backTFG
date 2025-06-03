@@ -7,6 +7,8 @@ import com.tfg.backend.persistance.repository.ClimaDiaRepository;
 import com.tfg.backend.persistance.repository.EquipajeDiaRepository;
 import com.tfg.backend.persistance.repository.EquipajeRepository;
 import org.springframework.stereotype.Service;
+import com.tfg.backend.dto.EquipajeHistorialDto;
+import com.tfg.backend.persistance.repository.UsuarioRepository;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -21,19 +23,22 @@ public class EquipajeService {
     private final ClimaDiaRepository climaDiaRepository;
     private final WeatherService weatherService;
     private final ItemEquipajeService itemEquipajeService;
+    private final UsuarioRepository usuarioRepository; // <-- NUEVO
 
     public EquipajeService(
-            EquipajeRepository equipajeRepository,
-            EquipajeDiaRepository equipajeDiaRepository,
-            ClimaDiaRepository climaDiaRepository,
-            WeatherService weatherService,
-            ItemEquipajeService itemEquipajeService
+        EquipajeRepository equipajeRepository,
+        EquipajeDiaRepository equipajeDiaRepository,
+        ClimaDiaRepository climaDiaRepository,
+        WeatherService weatherService,
+        ItemEquipajeService itemEquipajeService,
+        UsuarioRepository usuarioRepository // <-- NUEVO
     ) {
         this.equipajeRepository = equipajeRepository;
         this.equipajeDiaRepository = equipajeDiaRepository;
         this.climaDiaRepository = climaDiaRepository;
         this.weatherService = weatherService;
         this.itemEquipajeService = itemEquipajeService;
+        this.usuarioRepository = usuarioRepository;
     }
 
     public Equipaje crearEquipaje(EquipajeRequest request, Usuario usuario) {
@@ -108,4 +113,40 @@ public class EquipajeService {
         if (texto == null || texto.isEmpty()) return texto;
         return texto.substring(0, 1).toUpperCase() + texto.substring(1);
     }
+
+     public List<EquipajeHistorialDto> obtenerHistorialPorUsuario(String email) {
+        Optional<Usuario> usuarioOpt = usuarioRepository.findByEmail(email);
+        if (usuarioOpt.isEmpty()) return Collections.emptyList();
+
+        Usuario usuario = usuarioOpt.get();
+        List<Equipaje> equipajes = equipajeRepository.findByUsuarioOrderByCreadoEnDesc(usuario);
+
+
+
+        return equipajes.stream().map(e -> new EquipajeHistorialDto(
+        e.getId().longValue(), // 👈 conversión explícita
+        e.getDestino(),
+        e.getFechaSalida(),
+        e.getFechaRegreso()
+    )).toList();
+
+    }
+
+    public boolean eliminarEquipajePorUsuario(Integer equipajeId, String email){
+    Optional<Equipaje> equipajeOpt = equipajeRepository.findById(equipajeId);
+    Optional<Usuario> usuarioOpt = usuarioRepository.findByEmail(email);
+
+    if (equipajeOpt.isEmpty() || usuarioOpt.isEmpty()) return false;
+
+    Equipaje equipaje = equipajeOpt.get();
+    Usuario usuario = usuarioOpt.get();
+
+    if (!equipaje.getUsuario().getId().equals(usuario.getId())) {
+        return false; // el equipaje no pertenece al usuario autenticado
+    }
+
+    equipajeRepository.delete(equipaje);
+    return true;
+}
+
 }
