@@ -5,7 +5,7 @@ COPY . .
 RUN mvn clean package -DskipTests
 
 # Stage de empaquetado
-FROM eclipse-temurin:11-jre-slim # Use a matching JRE image for runtime
+FROM eclipse-temurin:11-jre-slim 
 WORKDIR /app
 COPY --from=build /app/target/*.jar app.jar
 
