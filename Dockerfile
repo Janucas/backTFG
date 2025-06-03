@@ -5,7 +5,7 @@ COPY . .
 RUN mvn clean package -DskipTests
 
 #Stage de empaquetado,
-FROM eclipse-temurin:11-jre-jammy-slim 
+FROM eclipse-temurin:11-jre-jammy
 WORKDIR /app
 COPY --from=build /app/target/*.jar app.jar
 
