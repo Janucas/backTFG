@@ -1,11 +1,18 @@
 # Stage de compilación
-FROM maven:3.8.2-jdk-11 AS build # Puedes usar una versión más reciente de Maven y JDK
+FROM maven:3.9.6-jdk-17 AS build # Es recomendable usar una versión de JDK más reciente y estable, como JDK 17
+WORKDIR /app
 COPY . .
 RUN mvn clean package -DskipTests
 
 # Stage de empaquetado
-FROM openjdk:11-jdk-slim # Puedes usar una versión más reciente de OpenJDK
-COPY --from=build /target/nombre-de-tu-aplicacion.jar app.jar # Reemplaza "nombre-de-tu-aplicacion.jar" con el nombre real de tu JAR
-ENV PORT=8080
+FROM openjdk:17-jdk-slim # Usamos la misma versión de JDK que en la etapa de compilación
+WORKDIR /app
+COPY --from=build /app/target/*.jar app.jar # Asegúrate de que esto coincida con el nombre de tu JAR, o usa *.jar para mayor flexibilidad
+
+# EXPONER EL PUERTO. El puerto 8080 ya está en tu application.properties
 EXPOSE 8080
-ENTRYPOINT ["java","-jar","app.jar"]
+
+# DEFINIR EL COMANDO DE ARRANQUE.
+# Render inyectará las variables de entorno que configures en su dashboard.
+# No necesitas definir los valores sensibles aquí.
+ENTRYPOINT ["java", "-jar", "app.jar"]
