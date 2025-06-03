@@ -9,8 +9,8 @@ public class WebConfig implements WebMvcConfigurer {
     @Override
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/**")
-                .allowedOrigins("https://backtfg-veio.onrender.com")  // o el dominio de tu frontend
-                .allowedMethods("*")
+                .allowedOrigins("https://fronttfg.onrender.com") // Dominio del frontend
+                .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
                 .allowedHeaders("*")
                 .allowCredentials(true);
     }
