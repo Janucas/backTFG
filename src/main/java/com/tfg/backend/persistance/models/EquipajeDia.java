@@ -20,7 +20,7 @@ public class EquipajeDia {
     private LocalDate fecha;
 
     @ManyToOne
-    @JoinColumn(name = "equipaje_dia_id")
+    @JoinColumn(name = "equipaje_id")
     private Equipaje equipaje;
 
     @OneToMany(mappedBy = "equipajeDia", cascade = CascadeType.ALL, orphanRemoval = true)
