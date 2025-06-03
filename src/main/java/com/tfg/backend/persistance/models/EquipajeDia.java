@@ -7,6 +7,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 @Entity
+@Table(name = "equipaje_dia")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -19,7 +20,7 @@ public class EquipajeDia {
     private LocalDate fecha;
 
     @ManyToOne
-    @JoinColumn(name = "equipaje_id")
+    @JoinColumn(name = "equipaje_dia_id")
     private Equipaje equipaje;
 
     @OneToMany(mappedBy = "equipajeDia", cascade = CascadeType.ALL, orphanRemoval = true)
