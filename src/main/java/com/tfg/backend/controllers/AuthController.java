@@ -13,7 +13,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 // 👇👇 Añade esta línea justo antes del controlador
-@CrossOrigin(origins = "https://fronttfg.onrender.com")
+//@CrossOrigin(origins = "https://fronttfg.onrender.com")
 @RestController
 @RequestMapping("/auth")
 public class AuthController {
