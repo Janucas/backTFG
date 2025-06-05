@@ -67,4 +67,24 @@ public class AuthController {
         String token = jwtUtil.generateToken(userDetails.getUsername());
         return ResponseEntity.ok(new AuthResponse(token));
     }
+
+    @PostMapping("/login-google")
+public ResponseEntity<AuthResponse> loginWithGoogle(@RequestBody AuthRequest request) {
+    String email = request.getUsername(); // en este caso, el email viene en username
+    String nombre = request.getPassword(); // usaremos el campo password para el nombre (truco rápido)
+
+    Usuario usuario = usuarioRepository.findByEmail(email).orElseGet(() -> {
+        Usuario nuevo = new Usuario();
+        nuevo.setEmail(email);
+        nuevo.setUsername(email);
+        nuevo.setPassword(passwordEncoder.encode("google-auth")); // no se usará
+        nuevo.setRole("USER");
+        return usuarioRepository.save(nuevo);
+    });
+
+    // Generar JWT
+    String token = jwtUtil.generateToken(usuario.getUsername());
+    return ResponseEntity.ok(new AuthResponse(token));
+}
+
 }
